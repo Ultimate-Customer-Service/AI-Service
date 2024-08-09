@@ -1,13 +1,20 @@
-// const { databaseProduct } = require("../config/mongodb");
+const database = require("../config/mongodb");
 
+class Product {
+	static async findProductByCategory(category) {
+		try {
+			// console.log(category, "<<<<<< MASUK MODEL PRODUCT");
 
-// class Product {
-//     static async findProductByCategory(category) {
-//         const product = databaseProduct.collection("product")
-//         const data = await product.findOne({ category })
+			const product = await database
+				.collection("products")
+				.findOne({ category });
 
-//         return data
-//     }
-// }
+			return product;
+		} catch (error) {
+			// console.log(error, "<<<<<<< FIND PRODUCT");
+			console.log(error)
+		}
+	}
+}
 
-// module.exports = Product;
+module.exports = Product;
