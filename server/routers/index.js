@@ -3,12 +3,7 @@ const express = require("express");
 const router = express.Router();
 
 router.get("/", async (req, res) => {
-	console.log("ini asdasdasdasdasd");
-    
-    //   res.send("Hello World!");
-	let result = await Product.findProductByCategory("shoes");
-	console.log(result, "<<<<<<<<< DI ROUTER");
-
+	res.send("Hello World!");
 	res.json(result);
 });
 
@@ -17,15 +12,15 @@ router.get("/", async (req, res) => {
 //=====================================================
 const OpenAI = require("openai");
 const Product = require("../models/Product");
-const { OPENAI_API_KEY, ASSISTANT_ID, COLLABORATOR_ID } = process.env;
+const { OPENAI_API_KEY, ASSISTANT_ID } = process.env;
 
 const openai = new OpenAI({
 	apiKey: OPENAI_API_KEY,
 });
 
-const collaborator = new OpenAI({
-	apiKey: COLLABORATOR_ID,
-});
+// const collaborator = new OpenAI({
+// 	apiKey: COLLABORATOR_ID,
+// });
 
 const assistantId = ASSISTANT_ID;
 let pollingInterval;
@@ -42,29 +37,10 @@ async function addMessage(threadId, message, res) {
 	// Convert message to lowercase for case-insensitive matching
 	const lowerCaseMessage = message.toLowerCase();
 
-	// Example product database for demonstration
-	// const products = {
-	// 	"product x": {
-	// 		name: "Product X",
-	// 		price: "$99.99",
-	// 		availability: "In Stock",
-	// 	},
-	// 	"product y": {
-	// 		name: "Product Y",
-	// 		price: "$149.99",
-	// 		availability: "Out of Stock",
-	// 	},
-	// };
-
-    const categories = ["shoes", "bracelet", "necklace", "watch"]; // Add more categories as needed
+	const categories = ["shoes", "bracelet", "necklace", "watch"]; // Add more categories as needed
 	let productInfo;
 
-	// Check if the message is asking for a specific product
-	// const productInfo = Object.entries(products).find(([key]) =>
-	// 	lowerCaseMessage.includes(key)
-	// );
-
-    for (const category of categories) {
+	for (const category of categories) {
 		if (lowerCaseMessage.includes(category)) {
 			productInfo = await Product.findProductByCategory(category);
 			break;
@@ -72,10 +48,7 @@ async function addMessage(threadId, message, res) {
 	}
 
 	if (productInfo) {
-		// const [productName, details] = productInfo;
-		// const productMessage = `The product '${details.name}' is priced at ${details.price} and is currently ${details.availability}.`;
-        const productMessage = `We have a product in the ${productInfo.category} category: '${productInfo.name}'`;
-
+		const productMessage = `We have a product in the ${productInfo.category} category: '${productInfo.name}'`;
 
 		// Record the user's message and product information in the conversation history
 		await openai.beta.threads.messages.create(threadId, {
